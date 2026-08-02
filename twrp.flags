@@ -1,0 +1,13 @@
+# Mount point       FS          device                                  flags
+/boot               emmc        /dev/block/by-name/boot                 flags=display="Boot";backup=1;flashimg=1
+/dtbo               emmc        /dev/block/by-name/dtbo                 flags=display="DTBO";backup=1;flashimg=1
+/vbmeta             emmc        /dev/block/by-name/vbmeta               flags=display="VBMeta";backup=1;flashimg=1
+
+# EFS & IMEI Backup
+/efs                ext4        /dev/block/by-name/efs                  flags=display="EFS";backup=1
+/sec_efs            ext4        /dev/block/by-name/sec_efs              flags=display="Sec EFS";backup=1
+
+# Removable Storage (SD Card & USB-OTG)
+/external_sd        auto        /dev/block/mmcblk1p1    /dev/block/mmcblk1  flags=display="Micro SDcard";storage;wipeingui;removable
+/usb_otg            auto        /dev/block/sda1         /dev/block/sda      flags=display="USB-OTG";storage;wipeingui;removable
+
