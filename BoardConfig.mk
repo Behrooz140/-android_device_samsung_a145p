@@ -101,7 +101,7 @@ $(eval $(call add-rc-file,snapuserd.rc))
 # USB / MTP / ADB Configuration
 TW_THEME := portrait_hdpi
 RECOVERY_SDCARD_ON_DATA := true
-TARGET_USE_CUSTOM_LUN_FILE_PATH := /config/usb_gadget/g1/functions/mass_storage.0/lun0/file
+TARGET_USE_CUSTOM_LUN_FILE_PATH := "/config/usb_gadget/g1/functions/mass_storage.0/lun%d/file"
 
 # TWRP USB IDs (Samsung / Standard Android)
 TW_EXCLUDE_SUPERSU := true
