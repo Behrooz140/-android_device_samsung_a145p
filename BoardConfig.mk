@@ -85,3 +85,13 @@ BOARD_RECOVERY_RAMDISK_USE_SYSTEM_AS_ROOT := true
 # Recovery / File Systems
 TARGET_RECOVERY_FSTAB := $(DEVICE_PATH)/recovery.fstab
 
+# Init RC Scripts for Recovery
+PRODUCT_COPY_FILES += \
+    $(DEVICE_PATH)/Android.hardware.health-service.example_recovery.rc:recovery/root/Android.hardware.health-service.example_recovery.rc \
+    $(DEVICE_PATH)/dsms.rc:recovery/root/dsms.rc \
+    $(DEVICE_PATH)/libdsms.recovery.rc:recovery/root/libdsms.recovery.rc \
+    $(DEVICE_PATH)/mtk-plpath-utils.rc:recovery/root/mtk-plpath-utils.rc \
+    $(DEVICE_PATH)/servicemanager.recovery.rc:recovery/root/servicemanager.recovery.rc \
+    $(DEVICE_PATH)/snapuserd.rc:recovery/root/snapuserd.rc
+
+
