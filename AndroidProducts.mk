@@ -1,6 +1,6 @@
 PRODUCT_MAKEFILES := \
-    $(LOCAL_DIR)/omni_a145p.mk
+    $(LOCAL_DIR)/twrp_a145p.mk
 
 COMMON_LUNCH_CHOICES := \
-    omni_a145p-userdebug \
-    omni_a145p-eng
+    twrp_a145p-userdebug \
+    twrp_a145p-eng
