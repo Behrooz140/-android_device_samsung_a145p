@@ -59,7 +59,9 @@ jobs:
 
       - name: Copy Device Tree
         run: |
-          cp -r device/samsung/a145p workspace/device/samsung/a145p
+          mkdir -p workspace/device/samsung/a145p
+          cp -r device/samsung/a145p/* workspace/device/samsung/a145p/
+
 
       - name: Build TWRP
         run: |
