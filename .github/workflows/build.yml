@@ -20,10 +20,11 @@ jobs:
           remove-haskell: 'true'
 
       - name: Check Out Device Tree
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4  # <--- اینو از v3 بکن v4
         with:
           path: device/samsung/a145p
           lfs: true
+
 
       - name: Set up Git LFS manually
         run: |
@@ -69,7 +70,8 @@ jobs:
           mka recoveryimage -j$(nproc --all)
 
       - name: Upload Recovery Image
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4  # <--- اینو از v3 بکن v4
         with:
           name: TWRP-Samsung-A145P
           path: workspace/out/target/product/a145p/recovery.img
+
