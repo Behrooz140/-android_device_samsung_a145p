@@ -94,4 +94,17 @@ PRODUCT_COPY_FILES += \
     $(DEVICE_PATH)/servicemanager.recovery.rc:recovery/root/servicemanager.recovery.rc \
     $(DEVICE_PATH)/snapuserd.rc:recovery/root/snapuserd.rc
 
+# USB / MTP / ADB Configuration
+TW_THEME := portrait_hdpi
+RECOVERY_SDCARD_ON_DATA := true
+TARGET_USE_CUSTOM_LUN_FILE_PATH := /config/usb_gadget/g1/functions/mass_storage.0/lun0/file
+
+# TWRP USB IDs (Samsung / Standard Android)
+TW_EXCLUDE_SUPERSU := true
+TW_INCLUDE_CRYPTO := true
+TW_USE_TOOLBOX := true
+
+# ADB & MTP Enablement
+GLOBAL_CFLAGS += -DPROPERTY_PERMS_APPEND_ONLY
+
 
