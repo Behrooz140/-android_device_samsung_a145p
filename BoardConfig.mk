@@ -107,4 +107,9 @@ TW_USE_TOOLBOX := true
 # ADB & MTP Enablement
 GLOBAL_CFLAGS += -DPROPERTY_PERMS_APPEND_ONLY
 
+# USB Configfs Settings for Android 12
+TW_EXCLUDE_DEFAULT_USB_INIT := true
+TW_EXTRA_LANGUAGES := true
+
+
 
