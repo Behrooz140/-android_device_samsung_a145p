@@ -73,13 +73,12 @@ jobs:
             fi
           done
 
-
-
       - name: Build TWRP
         run: |
           cd workspace
           export CCACHE_EXEC=$(which ccache)
           export USE_CCACHE=1
+          export ALLOW_MISSING_DEPENDENCIES=true
           source build/envsetup.sh
           lunch twrp_a145p-eng || lunch omni_a145p-eng
           mka recoveryimage -j$(nproc --all)
