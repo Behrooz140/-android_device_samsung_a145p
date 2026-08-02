@@ -1,30 +1,39 @@
-name: Build TWRP Recovery for A145P
+name: Build TWRP for Samsung A145P
 
 on:
   workflow_dispatch:
 
 jobs:
   build:
-    name: Build TWRP by GitHub Actions
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
     steps:
-      - name: Checkout Device Tree
-        uses: actions/checkout@v4
+      - name: Maximize Build Space
+        uses: easimon/maximize-build-space@master
         with:
-          path: device_tree
+          root-reserve-mb: 20480
+          swap-size-mb: 1024
+          remove-dotnet: 'true'
+          remove-android: 'true'
+          remove-haskell: 'true'
 
-      - name: Free Disk Space
-        run: |
-          sudo rm -rf /usr/share/dotnet /etc/apt/sources.list.d/* /usr/local/lib/android
-          sudo apt-get clean
-          df -h
+      - name: Check Out Device Tree
+        uses: actions/checkout@v3
+        with:
+          path: device/samsung/a145p
+          lfs: true
 
-      - name: Setup Repositories & Install Build Dependencies
+      - name: Set up Git LFS manually
         run: |
-          sudo add-apt-repository universe -y
-          sudo add-apt-repository multiverse -y
+          cd device/samsung/a145p
+          git lfs pull
+
+      - name: Install Build Dependencies
+        run: |
           sudo apt-get update
-          sudo apt-get install -y bc bison build-essential ccache curl flex g++-multilib gcc-multilib git gnupg gperf imagemagick libncurses5-dev libsdl1.2-dev libssl-dev libxml2 libxml2-utils lzop pngcrush rsync schedtool squashfs-tools xsltproc zip zlib1g-dev python3 python3-pip lib32z1-dev
+          sudo apt-get install -y ccache bison build-essential curl flex g++-multilib gcc-multilib git gnupg gperf lib32ncurses5-dev lib32z1-dev libgl1-mesa-dev libxml2-utils xsltproc zip zlib1g-dev python3
 
       - name: Install Repo Tool
         run: |
@@ -33,60 +42,34 @@ jobs:
           chmod a+x ~/bin/repo
           echo "$HOME/bin" >> $GITHUB_PATH
 
-      - name: Initialize TWRP Source Code
+      - name: Initialize TWRP Source
         run: |
-          mkdir workspace
+          mkdir -p workspace
           cd workspace
-          git config --global user.name "GitHub Actions"
-          git config --global user.email "actions@github.com"
-          repo init --depth=1 -u https://github.com/minimal-manifest-twrp/platform_manifest_twrp_aosp.git -b twrp-12.1
-          repo sync -j$(nproc --all) --force-sync --no-clone-bundle --no-tags
+          git config --global user.name "Behrooz140"
+          git config --global user.email "behrooz@example.com"
+          repo init -u https://github.com/minimal-manifest-twrp/platform_manifest_twrp_aosp.git -b twrp-12.1 --depth=1
 
-      - name: Move Device Tree & Fix Symlink Conflicts
-        run: |
-          mkdir -p workspace/device/samsung/a145p
-          cp -r device_tree/* workspace/device/samsung/a145p/
-          
-          # دانلود فایل کرنل
-          curl -sLf "https://filebin.net/9pfd6vv4wk4bjllc/kernel" -o workspace/device/samsung/a145p/kernel
-
-      - name: Building TWRP Image with Patch
+      - name: Sync Sources
         run: |
           cd workspace
-          export ALLOW_MISSING_DEPENDENCIES=true
+          repo sync -c -j$(nproc --all) --force-sync --no-clone-bundle --no-tags
+
+      - name: Copy Device Tree
+        run: |
+          cp -r device/samsung/a145p workspace/device/samsung/a145p
+
+      - name: Build TWRP
+        run: |
+          cd workspace
+          export CCACHE_EXEC=$(which ccache)
+          export USE_CCACHE=1
           source build/envsetup.sh
-          lunch omni_a145p-eng || lunch omni_a145p-userdebug
-          
-          # ساخت اولیه ساختار پوشه‌ها و پاک‌سازی هوشمند تداخل vendor
-          make -j$(nproc --all) recovery/root/vendor || true
-          rm -rf out/target/product/a145p/root/vendor
-          rm -rf out/target/product/a145p/recovery/root/vendor
-          
-          # اجرای بیلد اصلی ریکاوری
-          make recoveryimage -j$(nproc --all)
+          lunch twrp_a145p-eng || lunch omni_a145p-eng
+          mka recoveryimage -j$(nproc --all)
 
-      - name: Fast Package TAR
-        run: |
-          mkdir -p output
-          cd workspace/out/target/product/a145p/
-          
-          if [ -f "recovery.img" ]; then
-            echo "Packaging recovery.img..."
-            tar -cvf twrp-A145P.tar recovery.img
-            cp twrp-A145P.tar $GITHUB_WORKSPACE/output/
-          elif [ -f "boot.img" ]; then
-            echo "Packaging boot.img..."
-            cp boot.img recovery.img
-            tar -cvf twrp-A145P.tar recovery.img
-            cp twrp-A145P.tar $GITHUB_WORKSPACE/output/
-          else
-            echo "ERROR: Image file not generated in standard directory!"
-            exit 1
-          fi
-
-
-      - name: Upload Build Artifacts
-        uses: actions/upload-artifact@v4
+      - name: Upload Recovery Image
+        uses: actions/upload-artifact@v3
         with:
-          name: TWRP_Samsung_A145P
-          path: output/
+          name: TWRP-Samsung-A145P
+          path: workspace/out/target/product/a145p/recovery.img
