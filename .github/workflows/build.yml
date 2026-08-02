@@ -62,6 +62,16 @@ jobs:
           mkdir -p workspace/device/samsung/a145p
           cp -r device/samsung/a145p/. workspace/device/samsung/a145p/
 
+      - name: Check Missing RC Files
+        run: |
+          cd device/samsung/a145p
+          for file in Android.hardware.health-service.example_recovery.rc dsms.rc libdsms.recovery.rc mtk-plpath-utils.rc servicemanager.recovery.rc snapuserd.rc; do
+            if [ ! -f "$file" ]; filename
+              echo "⚠️ WARNING: File $file is MISSING in repository!"
+            else
+              echo "✅ FOUND: $file"
+            fi
+          done
 
 
       - name: Build TWRP
