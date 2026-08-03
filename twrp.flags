@@ -9,17 +9,16 @@
 /vbmeta_system      emmc        /dev/block/by-name/vbmeta_system        flags=display="VBMeta System";backup=1;flashimg=1
 /vbmeta_vendor      emmc        /dev/block/by-name/vbmeta_vendor        flags=display="VBMeta Vendor";backup=1;flashimg=1
 
-# EFS, NVRAM & IMEI Backup (Critical)
+# EFS, NVRAM & IMEI Backup (Critical for MediaTek/Samsung)
 /efs                ext4        /dev/block/by-name/sec_efs              flags=display="EFS";backup=1
-/sec_efs            ext4        /dev/block/by-name/sec_efs              flags=subpartitionof=/efs;backup=1
 /nvram              emmc        /dev/block/by-name/nvram                flags=display="NVRAM";backup=1;subpartitionof=/efs
 /nvdata             ext4        /dev/block/by-name/nvdata               flags=display="NVDATA";backup=1;subpartitionof=/efs
 /nvcfg              ext4        /dev/block/by-name/nvcfg                flags=display="NVCFG";backup=1;subpartitionof=/efs
 
-# Samsung CSC & Feature Partitions
-/prism              ext4        /dev/block/by-name/prism                flags=display="Prism";backup=1;flashimg=1
-/optics             ext4        /dev/block/by-name/optics               flags=display="Optics";backup=1;flashimg=1
+# Samsung CSC & Feature Partitions (Set to auto for EROFS/EXT4 compatibility)
+/prism              auto        /dev/block/by-name/prism                flags=display="Prism";backup=1;flashimg=1
+/optics             auto        /dev/block/by-name/optics               flags=display="Optics";backup=1;flashimg=1
 
 # Removable Storage (SD Card & USB-OTG)
-/external_sd        auto        /dev/block/mmcblk1p1    /dev/block/mmcblk1  flags=display="Micro SDcard";storage;wipeingui;removable
-/usb_otg            auto        /dev/block/sda1         /dev/block/sda      flags=display="USB-OTG";storage;wipeingui;removable
+/external_sd        auto        /dev/block/mmcblk1p1                    flags=display="Micro SDcard";storage;wipeingui;removable
+/usb_otg            auto        /dev/block/sda1                         flags=display="USB-OTG";storage;wipeingui;removable
