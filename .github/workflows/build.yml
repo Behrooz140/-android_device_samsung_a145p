@@ -53,19 +53,21 @@ jobs:
       - name: Sync Sources
         run: |
           cd workspace
-          repo sync -c -j$(nproc --all) --force-sync --no-clone-bundle --no-tags
+          repo sync -c -j$(nproc --all) --no-clone-bundle --no-tags --fail-fast
 
       - name: Copy Device Tree to Workspace
         run: |
           mkdir -p workspace/device/samsung/a145p
           cp -r device/samsung/a145p/. workspace/device/samsung/a145p/
+          chmod +x workspace/device/samsung/a145p/avb_digest_patch.py
 
-      - name: Verify RC Files in Workspace
+      - name: Verify Device Tree Files
         run: |
           cd workspace/device/samsung/a145p
-          for file in Android.hardware.health-service.example_recovery.rc dsms.rc libdsms.recovery.rc mtk-plpath-utils.rc servicemanager.recovery.rc snapuserd.rc; do
+          echo "=== Checking Critical Build Files ==="
+          for file in Android.mk Android.bp BoardConfig.mk recovery.fstab system.prop mkbootimg.mk avb_digest_patch.py; do
             if [ ! -f "$file" ]; then
-              echo "⚠️ WARNING: File $file is MISSING in repository!"
+              echo "❌ MISSING: $file"
             else
               echo "✅ FOUND: $file"
             fi
@@ -78,7 +80,7 @@ jobs:
           export USE_CCACHE=1
           export ALLOW_MISSING_DEPENDENCIES=true
           source build/envsetup.sh
-          lunch twrp_a145p-eng
+          lunch twrp_a145p-userdebug
           mka recoveryimage -j$(nproc --all)
 
       - name: Upload Recovery Image
