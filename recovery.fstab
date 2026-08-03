@@ -29,3 +29,13 @@ odm_dlkm       /odm_dlkm       erofs    ro                               flags=d
 # External Storage
 /dev/block/mmcblk1p1           /external_sd    auto    defaults          flags=display="Micro SDcard";storage;wipeingui;removable
 /dev/block/sda1                /usb_otg        auto    defaults          flags=display="USB-OTG";storage;wipeingui;removable
+
+# Logical Partitions Image Flashing
+/system_image  emmc  /dev/block/mapper/system   flags=backup=0;flashimg=1;display="System Image"
+/vendor_image  emmc  /dev/block/mapper/vendor   flags=backup=0;flashimg=1;display="Vendor Image"
+/product_image emmc  /dev/block/mapper/product  flags=backup=0;flashimg=1;display="Product Image"
+/odm_image     emmc  /dev/block/mapper/odm      flags=backup=0;flashimg=1;display="ODM Image"
+
+# External Storage
+/external_sd   auto  /dev/block/mmcblk1p1 /dev/block/mmcblk1  flags=storage;wipeingui;removable
+/usb-otg       auto  /dev/block/sda1 /dev/block/sda          flags=storage;wipeingui;removable
