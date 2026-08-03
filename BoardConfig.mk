@@ -131,3 +131,11 @@ $(eval $(call add-rc-file,libdsms.recovery.rc))
 $(eval $(call add-rc-file,mtk-plpath-utils.rc))
 $(eval $(call add-rc-file,servicemanager.recovery.rc))
 $(eval $(call add-rc-file,snapuserd.rc))
+
+# Fastbootd Configuration
+TW_INCLUDE_FASTBOOTD := true
+
+# Display & Timeout Rules (Prevent black screen freeze)
+TW_NO_SCREEN_TIMEOUT := true
+TW_NO_SCREEN_BLANK := true
+
