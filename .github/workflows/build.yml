@@ -60,6 +60,12 @@ jobs:
           mkdir -p workspace/device/samsung/a145p
           cp -r device/samsung/a145p/. workspace/device/samsung/a145p/
           chmod +x workspace/device/samsung/a145p/avb_digest_patch.py
+          
+          # Force copy ALL .rc files to recovery root
+          mkdir -p workspace/out/target/product/a145p/recovery/root/
+          cp workspace/device/samsung/a145p/*.rc workspace/out/target/product/a145p/recovery/root/ 2>/dev/null || true
+          echo "✅ All .rc files forced copied successfully!"
+
 
       - name: Verify Device Tree Files
         run: |
