@@ -1,14 +1,14 @@
 # Android fstab file for TWRP - Samsung Galaxy A14 (SM-A145P)
 
 # Dynamic Logical Partitions (EROFS)
-system         /system         erofs    ro                               flags=display="System";backup=1;logical;first_stage_mount
-vendor         /vendor         erofs    ro                               flags=display="Vendor";backup=1;logical;first_stage_mount
-product        /product        erofs    ro                               flags=display="Product";backup=1;logical;first_stage_mount
-odm            /odm            erofs    ro                               flags=display="ODM";backup=1;logical;first_stage_mount
-system_ext     /system_ext     erofs    ro                               flags=display="System EXT";backup=1;logical;first_stage_mount
-vendor_dlkm    /vendor_dlkm    erofs    ro                               flags=display="Vendor DLKM";backup=1;logical;first_stage_mount
-system_dlkm    /system_dlkm    erofs    ro                               flags=display="System DLKM";backup=1;logical;first_stage_mount
-odm_dlkm       /odm_dlkm       erofs    ro                               flags=display="ODM DLKM";backup=1;logical;first_stage_mount
+system         /system         erofs    ro    flags=display="System";backup=1;logical;first_stage_mount
+vendor         /vendor         erofs    ro    flags=display="Vendor";backup=1;logical;first_stage_mount
+product        /product        erofs    ro    flags=display="Product";backup=1;logical;first_stage_mount
+odm            /odm            erofs    ro    flags=display="ODM";backup=1;logical;first_stage_mount
+system_ext     /system_ext     erofs    ro    flags=display="System EXT";backup=1;logical;first_stage_mount
+vendor_dlkm    /vendor_dlkm    erofs    ro    flags=display="Vendor DLKM";backup=1;logical;first_stage_mount
+system_dlkm    /system_dlkm    erofs    ro    flags=display="System DLKM";backup=1;logical;first_stage_mount
+odm_dlkm       /odm_dlkm       erofs    ro    flags=display="ODM DLKM";backup=1;logical;first_stage_mount
 
 # Physical Partitions
 /dev/block/by-name/boot        /boot           emmc    defaults          flags=display="Boot";backup=1;flashimg=1
@@ -26,16 +26,12 @@ odm_dlkm       /odm_dlkm       erofs    ro                               flags=d
 /dev/block/by-name/optics      /optics         ext4    defaults          flags=display="Optics";backup=1
 /dev/block/by-name/prism       /prism          ext4    defaults          flags=display="Prism";backup=1
 
-# External Storage
-/dev/block/mmcblk1p1           /external_sd    auto    defaults          flags=display="Micro SDcard";storage;wipeingui;removable
-/dev/block/sda1                /usb_otg        auto    defaults          flags=display="USB-OTG";storage;wipeingui;removable
-
-# Logical Partitions Image Flashing
+# Logical Partitions Image Flashing (Allows flashing IMG directly in TWRP)
 /system_image  emmc  /dev/block/mapper/system   flags=backup=0;flashimg=1;display="System Image"
 /vendor_image  emmc  /dev/block/mapper/vendor   flags=backup=0;flashimg=1;display="Vendor Image"
 /product_image emmc  /dev/block/mapper/product  flags=backup=0;flashimg=1;display="Product Image"
 /odm_image     emmc  /dev/block/mapper/odm      flags=backup=0;flashimg=1;display="ODM Image"
 
-# External Storage
-/external_sd   auto  /dev/block/mmcblk1p1 /dev/block/mmcblk1  flags=storage;wipeingui;removable
-/usb-otg       auto  /dev/block/sda1 /dev/block/sda          flags=storage;wipeingui;removable
+# Removable Storage (SD Card & USB-OTG)
+/dev/block/mmcblk1p1    /external_sd    auto    defaults    flags=display="Micro SDcard";storage;wipeingui;removable
+/dev/block/sda1         /usb_otg        auto    defaults    flags=display="USB-OTG";storage;wipeingui;removable
