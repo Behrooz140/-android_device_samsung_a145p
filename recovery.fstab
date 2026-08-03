@@ -1,30 +1,33 @@
 # Android fstab file for TWRP - Samsung Galaxy A14 (SM-A145P)
 
-# Dynamic Logical Partitions (EROFS)
-system         /system         erofs    ro    flags=display="System";backup=1;logical;first_stage_mount
-vendor         /vendor         erofs    ro    flags=display="Vendor";backup=1;logical;first_stage_mount
-product        /product        erofs    ro    flags=display="Product";backup=1;logical;first_stage_mount
-odm            /odm            erofs    ro    flags=display="ODM";backup=1;logical;first_stage_mount
-system_ext     /system_ext     erofs    ro    flags=display="System EXT";backup=1;logical;first_stage_mount
-vendor_dlkm    /vendor_dlkm    erofs    ro    flags=display="Vendor DLKM";backup=1;logical;first_stage_mount
-system_dlkm    /system_dlkm    erofs    ro    flags=display="System DLKM";backup=1;logical;first_stage_mount
-odm_dlkm       /odm_dlkm       erofs    ro    flags=display="ODM DLKM";backup=1;logical;first_stage_mount
+# Dynamic Logical Partitions (Fallback: EROFS -> F2FS -> EXT4)
+system         /system         erofs    ro    avb=vbmeta,logical,first_stage_mount    flags=display="System";backup=1
+system         /system         f2fs     ro    avb=vbmeta,logical,first_stage_mount    flags=display="System F2FS";backup=0
+system         /system         ext4     ro    avb=vbmeta,logical,first_stage_mount    flags=display="System EXT4";backup=0
+
+vendor         /vendor         erofs    ro    avb,logical,first_stage_mount           flags=display="Vendor";backup=1
+product        /product        erofs    ro    avb,logical,first_stage_mount           flags=display="Product";backup=1
+odm            /odm            erofs    ro    avb,logical,first_stage_mount           flags=display="ODM";backup=1
+system_ext     /system_ext     erofs    ro    avb=vbmeta,logical,first_stage_mount    flags=display="System EXT";backup=1
+vendor_dlkm    /vendor_dlkm    erofs    ro    avb=vbmeta,logical,first_stage_mount    flags=display="Vendor DLKM";backup=1
+system_dlkm    /system_dlkm    erofs    ro    avb,logical,first_stage_mount           flags=display="System DLKM";backup=1
+odm_dlkm       /odm_dlkm       erofs    ro    avb,logical,first_stage_mount           flags=display="ODM DLKM";backup=1
 
 # Physical Partitions
-/dev/block/by-name/boot        /boot           emmc    defaults          flags=display="Boot";backup=1;flashimg=1
-/dev/block/by-name/recovery    /recovery       emmc    defaults          flags=display="Recovery";backup=1;flashimg=1
-/dev/block/by-name/init_boot   /init_boot      emmc    defaults          flags=display="Init Boot";backup=1;flashimg=1
-/dev/block/by-name/vendor_boot /vendor_boot    emmc    defaults          flags=display="Vendor Boot";backup=1;flashimg=1
-/dev/block/by-name/dtbo        /dtbo           emmc    defaults          flags=display="DTBO";backup=1;flashimg=1
-/dev/block/by-name/userdata    /data           f2fs    noatime,nosuid,nodev,discard,usrquota,grpquota,fsync_mode=nobarrier,reserve_root=32768,resgid=5678    flags=length=-16384;fscompress
-/dev/block/by-name/cache       /cache          ext4    defaults          flags=display="Cache"
-/dev/block/by-name/sec_efs     /efs            ext4    defaults          flags=display="EFS";backup=1
-/dev/block/by-name/carrier     /carrier        ext4    defaults          flags=display="Carrier"
-/dev/block/by-name/hidden      /preload        ext4    defaults          flags=display="Preload"
-/dev/block/by-name/misc        /misc           emmc    defaults          flags=display="Misc"
-/dev/block/by-name/md_udc      /metadata       ext4    defaults          flags=display="Metadata"
-/dev/block/by-name/optics      /optics         ext4    defaults          flags=display="Optics";backup=1
-/dev/block/by-name/prism       /prism          ext4    defaults          flags=display="Prism";backup=1
+/dev/block/by-name/boot        /boot           emmc    defaults                                                                                     flags=display="Boot";backup=1;flashimg=1
+/dev/block/by-name/recovery    /recovery       emmc    defaults                                                                                     flags=display="Recovery";backup=1;flashimg=1
+/dev/block/by-name/init_boot   /init_boot      emmc    defaults                                                                                     flags=display="Init Boot";backup=1;flashimg=1
+/dev/block/by-name/vendor_boot /vendor_boot    emmc    defaults                                                                                     flags=display="Vendor Boot";backup=1;flashimg=1
+/dev/block/by-name/dtbo        /dtbo           emmc    defaults                                                                                     flags=display="DTBO";backup=1;flashimg=1
+/dev/block/by-name/userdata    /data           f2fs    noatime,nosuid,nodev,discard,usrquota,grpquota,fsync_mode=nobarrier,reserve_root=32768,resgid=5678    recoveryonly,length=-20480,fscompress    flags=display="Userdata";backup=1
+/dev/block/by-name/cache       /cache          ext4    defaults                                                                                     flags=display="Cache"
+/dev/block/by-name/metadata    /metadata       ext4    noatime,nosuid,nodev,noauto_da_alloc,discard,journal_checksum,data=ordered,errors=panic,sync wait,first_stage_mount,formattable,check    flags=display="Metadata"
+/dev/block/by-name/sec_efs     /efs            ext4    defaults                                                                                     flags=display="EFS";backup=1
+/dev/block/by-name/carrier     /carrier        ext4    defaults                                                                                     flags=display="Carrier"
+/dev/block/by-name/hidden      /preload        ext4    defaults                                                                                     flags=display="Preload"
+/dev/block/by-name/misc        /misc           emmc    defaults                                                                                     flags=display="Misc"
+/dev/block/by-name/optics      /optics         ext4    defaults                                                                                     flags=display="Optics";backup=1
+/dev/block/by-name/prism       /prism          ext4    defaults                                                                                     flags=display="Prism";backup=1
 
 # Logical Partitions Image Flashing (Allows flashing IMG directly in TWRP)
 /system_image  emmc  /dev/block/mapper/system   flags=backup=0;flashimg=1;display="System Image"
