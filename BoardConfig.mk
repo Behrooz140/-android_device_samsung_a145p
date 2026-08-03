@@ -7,6 +7,7 @@ DEVICE_PATH := device/samsung/a145p
 
 # For building with minimal manifest
 ALLOW_MISSING_DEPENDENCIES := true
+BUILD_BROKEN_ELF_PREBUILT_PRODUCT_COPY_FILES := true
 
 # Architecture
 TARGET_ARCH := arm64
@@ -27,36 +28,49 @@ TARGET_2ND_CPU_VARIANT_RUNTIME := cortex-a55
 TARGET_SUPPORTS_64_BIT_APPS := true
 
 # Bootloader
+BOARD_VENDOR := samsung
+TARGET_SOC := mt6769
 TARGET_BOOTLOADER_BOARD_NAME := a145p
 TARGET_NO_BOOTLOADER := true
+TARGET_NO_RADIOIMAGE := true
 
 # Display
+TW_THEME := portrait_hdpi
 TARGET_SCREEN_DENSITY := 450
 TARGET_USES_VULKAN := true
+TARGET_RECOVERY_PIXEL_FORMAT := "RGBX_8888"
+TW_DEFAULT_BRIGHTNESS := 255
+TW_MAX_BRIGHTNESS := 1000
 
-# Kernel
+# Kernel Offset & Page Size Definition
 BOARD_BOOTIMG_HEADER_VERSION := 2
-BOARD_KERNEL_BASE := 0x40078000
-# Added Permissive SELinux to prevent crash loop on Android 15
-BOARD_KERNEL_CMDLINE := bootopt=64S3,32N2,64N2 loop.max_part=7 androidboot.selinux=permissive
 BOARD_KERNEL_PAGESIZE := 4096
+BOARD_KERNEL_OFFSET := 0x00008000
 BOARD_RAMDISK_OFFSET := 0x07c08000
 BOARD_KERNEL_TAGS_OFFSET := 0x0bc08000
-BOARD_MKBOOTIMG_ARGS += --header_version $(BOARD_BOOTIMG_HEADER_VERSION)
-BOARD_MKBOOTIMG_ARGS += --ramdisk_offset $(BOARD_RAMDISK_OFFSET)
-BOARD_MKBOOTIMG_ARGS += --tags_offset $(BOARD_KERNEL_TAGS_OFFSET)
+BOARD_DTB_OFFSET := 0x00000000
 BOARD_KERNEL_IMAGE_NAME := Image
 
-# Kernel - Prebuilt (Files in root directory)
+# Kernel Cmdline
+BOARD_KERNEL_CMDLINE := bootopt=64S3,32N2,64N2 loop.max_part=7 androidboot.selinux=permissive bootconfig buildtime_bootconfig=enable
+
+# Complete Mkbootimg Arguments Injection
+BOARD_MKBOOTIMG_ARGS := --kernel_offset $(BOARD_KERNEL_OFFSET)
+BOARD_MKBOOTIMG_ARGS += --ramdisk_offset $(BOARD_RAMDISK_OFFSET)
+BOARD_MKBOOTIMG_ARGS += --tags_offset $(BOARD_KERNEL_TAGS_OFFSET)
+BOARD_MKBOOTIMG_ARGS += --header_version $(BOARD_BOOTIMG_HEADER_VERSION)
+BOARD_MKBOOTIMG_ARGS += --pagesize $(BOARD_KERNEL_PAGESIZE)
+
+# Kernel - Prebuilt
 TARGET_FORCE_PREBUILT_KERNEL := true
 ifeq ($(TARGET_FORCE_PREBUILT_KERNEL),true)
 TARGET_PREBUILT_KERNEL := $(DEVICE_PATH)/kernel
 TARGET_PREBUILT_DTB := $(DEVICE_PATH)/dtb
-BOARD_MKBOOTIMG_ARGS += --dtb $(TARGET_PREBUILT_DTB)
+BOARD_MKBOOTIMG_ARGS += --dtb $(TARGET_PREBUILT_DTB) --dtb_offset $(BOARD_DTB_OFFSET)
 BOARD_PREBUILT_DTBOIMAGE := $(DEVICE_PATH)/dtbo.img
 endif
 
-# Partitions
+# Partitions & Block Size
 BOARD_FLASH_BLOCK_SIZE := 262144
 BOARD_BOOTIMAGE_PARTITION_SIZE := 80740352
 BOARD_RECOVERYIMAGE_PARTITION_SIZE := 80740352
@@ -82,11 +96,9 @@ BOARD_ODMIMAGE_FILE_SYSTEM_TYPE := erofs
 BOARD_SYSTEM_EXTIMAGE_FILE_SYSTEM_TYPE := erofs
 BOARD_VENDOR_DLKMIMAGE_FILE_SYSTEM_TYPE := erofs
 
-# Enable EROFS & F2FS Support in TWRP
-TARGET_USERIMAGES_USE_EXT4 := true
-TARGET_USERIMAGES_USE_F2FS := true
-TW_INCLUDE_LPDUMP := true
-TW_INCLUDE_CRYPTO := true
+# System Root & Extra Folders (Essential for Samsung/Android 15)
+BOARD_ROOT_EXTRA_FOLDERS := carrier data_mirror debug_ramdisk efs linkerconfig metadata odm_dlkm oem optics postinstall prism second_stage_resources spu system_ext vendor_dlkm system_dlkm
+BOARD_SUPPRESS_SECURE_ERASE := true
 
 # Platform
 TARGET_BOARD_PLATFORM := mt6769
@@ -95,7 +107,6 @@ TARGET_BOARD_PLATFORM := mt6769
 BOARD_INCLUDE_RECOVERY_DTBO := true
 BOARD_BUILD_SYSTEM_ROOT_IMAGE := false
 BOARD_USES_RECOVERY_AS_BOOT := false
-TARGET_RECOVERY_PIXEL_FORMAT := BGRA_8888
 TARGET_RECOVERY_FSTAB := $(DEVICE_PATH)/recovery.fstab
 
 # Verified Boot (Bypass Samsung Anti-Rollback & AVB Verification)
@@ -107,21 +118,29 @@ BOARD_AVB_RECOVERY_ROLLBACK_INDEX := 1
 BOARD_AVB_RECOVERY_ROLLBACK_INDEX_LOCATION := 1
 BOARD_AVB_RECOVERY_MAKE_VBMETA_IMAGE_ARGS += --flags 3
 
-# Security Patch & Platform Version Sync (Android 15 / SDK 35)
+# Security Patch & Platform Version Sync (Future-Proof Bypass)
 PLATFORM_VERSION := 15
 PLATFORM_VERSION_LAST_STABLE := 15
 PLATFORM_SECURITY_PATCH := 2099-12-31
 VENDOR_SECURITY_PATCH := 2099-12-31
 
-# TWRP Configuration
-TW_THEME := portrait_hdpi
+# TWRP Configuration & Tools
 TW_EXTRA_LANGUAGES := true
-TW_SCREEN_BLANK_ON_BOOT := true
 TW_USE_TOOLBOX := true
 TW_EXCLUDE_DEFAULT_USB_INIT := true
 ALWAYS_ALLOW_INSECURE_ADB := true
+TW_INCLUDE_REPACKTOOLS := true
+TW_INCLUDE_LPTOOLS := true
+TW_INCLUDE_LPDUMP := true
+TW_INCLUDE_CRYPTO := false
+TW_INCLUDE_CRYPTO_FBE := false
 
-# Init RC Scripts for Recovery (Full Set - Safe Copy)
+# Samsung Specific Extras
+TW_NO_REBOOT_BOOTLOADER := true
+TW_HAS_DOWNLOAD_MODE := true
+TW_USE_SAMSUNG_HAPTICS := true
+
+# Init RC Scripts for Recovery
 define add-rc-file
 $(if $(wildcard $(DEVICE_PATH)/$(1)),PRODUCT_COPY_FILES += $(DEVICE_PATH)/$(1):recovery/root/$(1))
 endef
