@@ -1,0 +1,12 @@
+# Platform & Board (MediaTek MT6769 for A145P)
+ro.product.board=a145p
+ro.board.platform=mt6769
+ro.boot.dynamic_partitions=true
+
+# ADB & Debugging
+ro.adb.secure=0
+ro.debuggable=1
+persist.sys.usb.config=adb,mtp
+
+# USB Controller (MediaTek)
+sys.usb.controller=musb-hdrc
