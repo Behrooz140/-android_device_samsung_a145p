@@ -1,5 +1,24 @@
 on init
-    # unlink /efs > /mnt/vendor/efs
+    # Unlink legacy efs symlink and set directories
     rm /efs
-    mkdir /efs
-    mkdir /sec_efs
+    mkdir /efs 0771 radio system
+    mkdir /sec_efs 0771 radio system
+
+    # Prevent thermal control / battery SIOP reset loop in recovery
+    write /sys/class/power_supply/battery/siop_level 0
+
+    # Set crypto ready property for TWRP encryption handling
+    setprop crypto.ready 1
+
+on fs
+    export ANDROID_ADDITIONAL_STAGE_OUT /tmp/stage
+
+# Disable Samsung Security / Encryption Enforcement Services in Recovery
+service vaultkeeper /system/bin/true
+    disabled
+
+service vaultkeeper_real /system/bin/true
+    disabled
+
+service flash_recovery /system/bin/true
+    disabled
