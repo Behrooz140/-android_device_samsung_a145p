@@ -1,10 +1,7 @@
 service dsmsd /system/bin/dsms
-	class core
-	user vendor_dsms
-	group vendor_dsms
-	disabled
-	oneshot
-
-on boot
-	start dsmsd
-
+    class core
+    user root
+    group root system
+    disabled
+    oneshot
+    seclabel u:r:recovery:s0
