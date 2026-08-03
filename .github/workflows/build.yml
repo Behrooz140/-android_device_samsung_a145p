@@ -20,11 +20,10 @@ jobs:
           remove-haskell: 'true'
 
       - name: Check Out Device Tree
-        uses: actions/checkout@v4  # <--- اینو از v3 بکن v4
+        uses: actions/checkout@v4
         with:
           path: device/samsung/a145p
           lfs: true
-
 
       - name: Set up Git LFS manually
         run: |
@@ -34,8 +33,7 @@ jobs:
       - name: Install Build Dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y ccache bison build-essential curl flex g++-multilib gcc-multilib git gnupg gperf libncurses5-dev libncurses-dev lib32z1-dev libgl1-mesa-dev libxml2-utils xsltproc zip zlib1g-dev python3 python3-pip
-
+          sudo apt-get install -y ccache bison build-essential curl flex g++-multilib gcc-multilib git gnupg gperf libncurses5-dev libncurses5 libgl1-mesa-dev libxml2-utils xsltproc zip zlib1g-dev python3 python3-pip python-is-python3
 
       - name: Install Repo Tool
         run: |
@@ -57,14 +55,14 @@ jobs:
           cd workspace
           repo sync -c -j$(nproc --all) --force-sync --no-clone-bundle --no-tags
 
-      - name: Copy Device Tree
+      - name: Copy Device Tree to Workspace
         run: |
           mkdir -p workspace/device/samsung/a145p
           cp -r device/samsung/a145p/. workspace/device/samsung/a145p/
 
-      - name: Check Missing RC Files
+      - name: Verify RC Files in Workspace
         run: |
-          cd device/samsung/a145p
+          cd workspace/device/samsung/a145p
           for file in Android.hardware.health-service.example_recovery.rc dsms.rc libdsms.recovery.rc mtk-plpath-utils.rc servicemanager.recovery.rc snapuserd.rc; do
             if [ ! -f "$file" ]; then
               echo "⚠️ WARNING: File $file is MISSING in repository!"
@@ -80,12 +78,11 @@ jobs:
           export USE_CCACHE=1
           export ALLOW_MISSING_DEPENDENCIES=true
           source build/envsetup.sh
-          lunch twrp_a145p-eng || lunch omni_a145p-eng
+          lunch twrp_a145p-eng
           mka recoveryimage -j$(nproc --all)
 
       - name: Upload Recovery Image
-        uses: actions/upload-artifact@v4  # <--- اینو از v3 بکن v4
+        uses: actions/upload-artifact@v4
         with:
           name: TWRP-Samsung-A145P
           path: workspace/out/target/product/a145p/recovery.img
-
