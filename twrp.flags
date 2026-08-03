@@ -1,13 +1,25 @@
-# Mount point       FS          device                                  flags
+# Boot & Kernel Partitions
 /boot               emmc        /dev/block/by-name/boot                 flags=display="Boot";backup=1;flashimg=1
+/init_boot          emmc        /dev/block/by-name/init_boot            flags=display="Init Boot";backup=1;flashimg=1
+/vendor_boot        emmc        /dev/block/by-name/vendor_boot          flags=display="Vendor Boot";backup=1;flashimg=1
 /dtbo               emmc        /dev/block/by-name/dtbo                 flags=display="DTBO";backup=1;flashimg=1
-/vbmeta             emmc        /dev/block/by-name/vbmeta               flags=display="VBMeta";backup=1;flashimg=1
 
-# EFS & IMEI Backup
-/efs                ext4        /dev/block/by-name/efs                  flags=display="EFS";backup=1
-/sec_efs            ext4        /dev/block/by-name/sec_efs              flags=display="Sec EFS";backup=1
+# AVB / Verified Boot Partitions
+/vbmeta             emmc        /dev/block/by-name/vbmeta               flags=display="VBMeta";backup=1;flashimg=1
+/vbmeta_system      emmc        /dev/block/by-name/vbmeta_system        flags=display="VBMeta System";backup=1;flashimg=1
+/vbmeta_vendor      emmc        /dev/block/by-name/vbmeta_vendor        flags=display="VBMeta Vendor";backup=1;flashimg=1
+
+# EFS, NVRAM & IMEI Backup (Critical)
+/efs                ext4        /dev/block/by-name/sec_efs              flags=display="EFS";backup=1
+/sec_efs            ext4        /dev/block/by-name/sec_efs              flags=subpartitionof=/efs;backup=1
+/nvram              emmc        /dev/block/by-name/nvram                flags=display="NVRAM";backup=1;subpartitionof=/efs
+/nvdata             ext4        /dev/block/by-name/nvdata               flags=display="NVDATA";backup=1;subpartitionof=/efs
+/nvcfg              ext4        /dev/block/by-name/nvcfg                flags=display="NVCFG";backup=1;subpartitionof=/efs
+
+# Samsung CSC & Feature Partitions
+/prism              ext4        /dev/block/by-name/prism                flags=display="Prism";backup=1;flashimg=1
+/optics             ext4        /dev/block/by-name/optics               flags=display="Optics";backup=1;flashimg=1
 
 # Removable Storage (SD Card & USB-OTG)
 /external_sd        auto        /dev/block/mmcblk1p1    /dev/block/mmcblk1  flags=display="Micro SDcard";storage;wipeingui;removable
 /usb_otg            auto        /dev/block/sda1         /dev/block/sda      flags=display="USB-OTG";storage;wipeingui;removable
-
