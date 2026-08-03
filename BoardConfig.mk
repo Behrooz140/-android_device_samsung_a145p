@@ -108,13 +108,15 @@ TW_SCREEN_BLANK_ON_BOOT := true
 TW_USE_TOOLBOX := true
 TW_EXCLUDE_DEFAULT_USB_INIT := true
 
-# Init RC Scripts (Safe Copy)
+# Init RC Scripts for Recovery (Full Set - Safe Copy)
 define add-rc-file
 $(if $(wildcard $(DEVICE_PATH)/$(1)),PRODUCT_COPY_FILES += $(DEVICE_PATH)/$(1):recovery/root/$(1))
 endef
 
 $(eval $(call add-rc-file,Android.hardware.health-service.example_recovery.rc))
 $(eval $(call add-rc-file,dsms.rc))
+$(eval $(call add-rc-file,init.recovery.mt6768.rc))
+$(eval $(call add-rc-file,init.recovery.samsung.rc))
 $(eval $(call add-rc-file,libdsms.recovery.rc))
 $(eval $(call add-rc-file,mtk-plpath-utils.rc))
 $(eval $(call add-rc-file,servicemanager.recovery.rc))
