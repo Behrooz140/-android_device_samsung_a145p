@@ -37,7 +37,8 @@ TARGET_USES_VULKAN := true
 # Kernel
 BOARD_BOOTIMG_HEADER_VERSION := 2
 BOARD_KERNEL_BASE := 0x40078000
-BOARD_KERNEL_CMDLINE := bootopt=64S3,32N2,64N2 loop.max_part=7
+# Added Permissive SELinux to prevent crash loop on Android 15
+BOARD_KERNEL_CMDLINE := bootopt=64S3,32N2,64N2 loop.max_part=7 androidboot.selinux=permissive
 BOARD_KERNEL_PAGESIZE := 4096
 BOARD_RAMDISK_OFFSET := 0x07c08000
 BOARD_KERNEL_TAGS_OFFSET := 0x0bc08000
@@ -54,7 +55,6 @@ TARGET_PREBUILT_DTB := $(DEVICE_PATH)/dtb
 BOARD_MKBOOTIMG_ARGS += --dtb $(TARGET_PREBUILT_DTB)
 BOARD_PREBUILT_DTBOIMAGE := $(DEVICE_PATH)/dtbo.img
 endif
-
 
 # Partitions
 BOARD_FLASH_BLOCK_SIZE := 262144
@@ -91,25 +91,28 @@ TW_INCLUDE_CRYPTO := true
 # Platform
 TARGET_BOARD_PLATFORM := mt6769
 
-# Recovery
+# Recovery Setup & Ramdisk for Android 15 / Samsung
 BOARD_INCLUDE_RECOVERY_DTBO := true
+BOARD_BUILD_SYSTEM_ROOT_IMAGE := false
+BOARD_USES_RECOVERY_AS_BOOT := false
 TARGET_RECOVERY_PIXEL_FORMAT := BGRA_8888
-TARGET_USERIMAGES_USE_EXT4 := true
-TARGET_USERIMAGES_USE_F2FS := true
 TARGET_RECOVERY_FSTAB := $(DEVICE_PATH)/recovery.fstab
 
-# Verified Boot (Bypass Samsung Anti-Rollback & Verification)
+# Verified Boot (Bypass Samsung Anti-Rollback & AVB Verification)
 BOARD_AVB_ENABLE := true
 BOARD_AVB_MAKE_VBMETA_IMAGE_ARGS += --flags 3
 BOARD_AVB_RECOVERY_KEY_PATH := external/avb/test/data/testkey_rsa4096.pem
 BOARD_AVB_RECOVERY_ALGORITHM := SHA256_RSA4096
 BOARD_AVB_RECOVERY_ROLLBACK_INDEX := 1
 BOARD_AVB_RECOVERY_ROLLBACK_INDEX_LOCATION := 1
+BOARD_AVB_RECOVERY_MAKE_VBMETA_IMAGE_ARGS += --flags 3
 
-# Anti Rollback Hack
+# Security Patch & Platform Version Sync (Android 15 / SDK 35)
+PLATFORM_SDK_VERSION := 35
+PLATFORM_VERSION := 15
+PLATFORM_VERSION_LAST_STABLE := 15
 PLATFORM_SECURITY_PATCH := 2099-12-31
 VENDOR_SECURITY_PATCH := 2099-12-31
-PLATFORM_VERSION := 16.1.0
 
 # TWRP Configuration
 TW_THEME := portrait_hdpi
@@ -117,6 +120,7 @@ TW_EXTRA_LANGUAGES := true
 TW_SCREEN_BLANK_ON_BOOT := true
 TW_USE_TOOLBOX := true
 TW_EXCLUDE_DEFAULT_USB_INIT := true
+ALWAYS_ALLOW_INSECURE_ADB := true
 
 # Init RC Scripts for Recovery (Full Set - Safe Copy)
 define add-rc-file
@@ -138,4 +142,3 @@ TW_INCLUDE_FASTBOOTD := true
 # Display & Timeout Rules (Prevent black screen freeze)
 TW_NO_SCREEN_TIMEOUT := true
 TW_NO_SCREEN_BLANK := true
-
