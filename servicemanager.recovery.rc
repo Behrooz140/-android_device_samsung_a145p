@@ -3,4 +3,4 @@ service servicemanager /system/bin/servicemanager
     group system readproc
     user root
     onrestart setprop servicemanager.ready false
-    seclabel u:r:servicemanager:s0
+    seclabel u:r:recovery:s0
