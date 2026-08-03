@@ -4,18 +4,15 @@ on init
     setprop sys.usb.ffs.aio_compat 0
 
 on fs && property:ro.debuggable=0
-    # distinguish USB shoulde connect or not, i.e. CDP vs SDP
+    # distinguish USB should connect or not, i.e. CDP vs SDP
     write /sys/class/udc/musb-hdrc/device/cmode 2
     # set charging free due to it wait for USB activation
     start adbd
 
 on post-fs
-    # Support A/B feature for EMMC and UFS boot region
-    symlink /dev/block/sda /dev/block/mmcblk0boot0
-    symlink /dev/block/sdb /dev/block/mmcblk0boot1
-    symlink /dev/block/mmcblk0boot0 /dev/block/platform/bootdevice/by-name/preloader_a
-    symlink /dev/block/mmcblk0boot1 /dev/block/platform/bootdevice/by-name/preloader_b
-    symlink /dev/block/mmcblk0boot0 /dev/block/by-name/preloader_a
-    symlink /dev/block/mmcblk0boot1 /dev/block/by-name/preloader_b
+    # Safe Symlinks for MediaTek PLPath Utils (Android 15 / One UI 7 Compatible)
+    symlink /dev/block/by-name/preloader_a /dev/block/platform/bootdevice/by-name/preloader_a
+    symlink /dev/block/by-name/preloader_b /dev/block/platform/bootdevice/by-name/preloader_b
 
+    # Execute MediaTek Preloader Path Utils safely
     exec u:r:update_engine:s0 root root -- /system/bin/mtk_plpath_utils
